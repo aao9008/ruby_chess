@@ -109,7 +109,7 @@ RSpec.describe Bishop do
     let(:bpc) { instance_double(Piece, color: :black) }
 
     context 'when there are no opposing pieces to capture' do
-      subject(:wbp) { described_class.new(color: :white, location: [3, 3]) }
+      subject(:wbp) { described_class.new(board, { color: :white, location: [3, 3] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -125,13 +125,13 @@ RSpec.describe Bishop do
 
       it 'has no moves' do
         allow(board).to receive(:data).and_return(data)
-        result = find_possible_captures(board)
+        result = wbp.find_possible_captures(board)
         expect(result).to be_empty
       end
     end
 
     context 'when there are 2 peices to capture increasing rank' do
-      subject(:wbp) { described_class.new(color: :white, location: [4, 4]) }
+      subject(:wbp) { described_class.new(board, { color: :white, location: [4, 4] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -154,7 +154,7 @@ RSpec.describe Bishop do
     end
 
     context 'when there is 1 peice to capture decreasing rank' do
-      subject(:wbp) { described_class.new(color: :white, location: [4, 4]) }
+      subject(:wbp) { described_class.new(board, { color: :white, location: [4, 4] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],
