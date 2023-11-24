@@ -137,18 +137,16 @@ class Piece
 
   #### Following functions are for peices that can only apply their move transformations once ####
   def single_move_set(board)
-    # Iterate over move set and create list of moves
     moves = move_set.inject([]) do |list, move|
-      list << create_moves(board.data, move)
+      list << create_single_moves(board.data, move)
     end
 
-    # Return array of possible moves
     moves.compact
   end
 
   def single_capture_set(board)
     captures = move_set.inject([]) do |list, move|
-      list << create_captures(board.data, move)
+      list << create_single_captures(board.data, move)
     end
 
     captures.compact
