@@ -53,7 +53,7 @@ class Piece
     @captures = remove_illegal_moves(board, possible_captures)
   end
 
-  # Returns list of possible captures 
+  # Returns list of possible captures
   def find_possible_captures(board)
     # Iterate over move set and create list of moves
     captures = move_set.inject([]) do |list, move|
@@ -133,5 +133,36 @@ class Piece
     # Move is valid if rank is between 0-7
     # Move is valid if file is between 0-7
     pos.first.between?(0, data.size - 1) && pos.last.between?(0, data.size - 1)
+  end
+
+  #### Following functions are for peices that can only apply their move transformations once ####
+  def single_move_set(board)
+    # Iterate over move set and create list of moves
+    moves = move_set.inject([]) do |list, move|
+      list << create_moves(board.data, move)
+    end
+
+    # Return array of possible moves
+    moves.compact
+  end
+
+  def single_capture_set(board)
+    captures = move_set.inject([]) do |list, move|
+      list << create_captures(board.data, move)
+    end
+
+    captures.compact
+  end
+
+  def create_single_moves(data, transformation)
+    pos = move_piece(transformation, location)
+
+    pos if valid_move?(pos, data) && data[pos.first][pos.last].nil?
+  end
+
+  def create_single_captures(data, transformation)
+    pos = move_piece(transformation, location)
+
+    pos if valid_move?(pos, data) && opposing_piece?(pos, data)
   end
 end
