@@ -1,13 +1,16 @@
-require_relative "../../lib/pieces/piece"
-require_relative "../../lib/board"
+# frozen_string_literal: true
 
+require_relative '../../lib/pieces/piece'
+require_relative '../../lib/board'
+require_relative '../../lib/move_validator'
+
+# This class if for testing the current_moves and #current_captures methods.
 class ChildPiece < Piece
   def transformations
     # Define the transformations for testing
     [[1, 0], [-1, 0], [0, 1], [0, -1]]
   end
 end
-
 
 RSpec.describe Piece do
   subject(:piece) { described_class.new(board, { color: :white, location: [2, 2] }) }
@@ -28,20 +31,24 @@ RSpec.describe Piece do
     end
   end
 
-  describe '#current_moves' do
+  describe '#remove_illegal_moves' do
+    let(:validator) { instance_double(MoveValidator) }
+
     before do
-      board = Array.new(5){ Array.new(5) }
-      child_piece = ChildPiece.new(board, { color: :white, location: [2, 2] })
-      @moves = child_piece.current_moves(board)
+      allow(MoveValidator).to receive(:new).and_return(validator)
+      allow(validator).to receive(:verify_possible_moves)
     end
 
-    context 'when chess piece is in middle of the board' do
-      it 'returns a list of valid moves' do
-        expect(@moves).to include([2, 3])
-        expect(@moves).to include([2, 1])
-        expect(@moves).to include([1, 2])
-        expect(@moves).to include([3, 2])
-      end
+    it 'creates a MoveValidator' do
+      expect(MoveValidator).to receive(:new).and_return(validator)
+      moves = [[1, 1], [2, 2], [3, 3]]
+      piece.remove_illegal_moves(board, moves)
+    end
+
+    it 'sends verify_possible_moves to MoveValidator' do
+      expect(validator).to receive(:verify_possible_moves)
+      moves = [[1, 1], [2, 2], [3, 3]]
+      piece.remove_illegal_moves(board, moves)
     end
   end
 end

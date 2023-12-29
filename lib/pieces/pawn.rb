@@ -8,7 +8,7 @@ class Pawn < Piece
 
   def initialize(board, args)
     super(board, args)
-    @symbol = " \u265E "
+    @symbol = " \u265F "
     @en_passant = false
   end
 
@@ -44,7 +44,7 @@ class Pawn < Piece
       basic_capture(board, 1),
       basic_capture(board, -1),
       en_passant_capture(board)
-  ].compact
+    ].compact
   end
 
   private
@@ -84,7 +84,7 @@ class Pawn < Piece
     return unless column_difference == 1
 
     # Check if all en_passant conditons have been met
-    return capture if valid_en_passant?(board)
+    capture if valid_en_passant?(board)
   end
 
   # This functions checks if conditions for en_passant have been met.

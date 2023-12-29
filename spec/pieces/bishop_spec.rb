@@ -36,8 +36,8 @@ RSpec.describe Bishop do
       end
     end
 
-    context 'when there are 3 empt diagonal spaces increasing rank' do
-      subject(:wbp) { described_class.new(board, { color: :white, location: [0,2] }) }
+    context 'when there are 3 empty diagonal spaces increasing rank' do
+      subject(:wbp) { described_class.new(board, { color: :white, location: [0, 2] }) }
       let(:data) do
         [
           [nil, nil, wbp, nil, nil, nil, nil, nil],
@@ -54,7 +54,7 @@ RSpec.describe Bishop do
       it 'return 3 possible moves' do
         allow(board).to receive(:data).and_return(data)
         result = wbp.find_possible_moves(board)
-        expect(result).to contain_exactly([1,1], [2,0], [1,3])
+        expect(result).to contain_exactly([1, 1], [2, 0], [1, 3])
       end
     end
 

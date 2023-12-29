@@ -70,8 +70,8 @@ RSpec.describe King do
           [nil, nil, nil, nil, nil, nil, nil, nil],
           [nil, nil, nil, nil, nil, nil, nil, nil],
           [nil, nil, nil, nil, nil, nil, nil, nil],
-          [nil, nil, nil, pic, pic, pic, nil, nil],
-          [nil, nil, nil, pic, wkg, nil, nil, wrk],
+          [nil, nil, nil, wpc, wpc, wpc, nil, nil],
+          [nil, nil, nil, wpc, wkg, nil, nil, wrk],
         ]
       end
 
@@ -217,10 +217,10 @@ RSpec.describe King do
 
   describe '#find_possible_captures' do
     let(:wpc) { instance_double(Piece, color: :white, symbol: nil) }
-    let(:bpc) { instance_double(Piece, color: :balck, symbol: nil) }
+    let(:bpc) { instance_double(Piece, color: :black, symbol: nil) }
 
     context 'when there are no opposing pieces to capture' do
-      subject(:wkg) { described_class(board, { color: :white, location: [7, 4] }) }
+      subject(:wkg) { described_class.new(board, { color: :white, location: [7, 4] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -243,7 +243,7 @@ RSpec.describe King do
     end
 
     context 'when the king is adjacent to 1 opposing piece' do
-      subject(:wkg) { described_class(board, { color: :white, location: [7, 4] }) }
+      subject(:wkg) { described_class.new(board, { color: :white, location: [7, 4] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],
@@ -266,7 +266,7 @@ RSpec.describe King do
     end
 
     context 'when the king is adjacent to 2 opposing pieces' do
-      subject(:bkg) { described_class(board, { color: :black, location: [4, 4] })}
+      subject(:bkg) { described_class.new(board, { color: :black, location: [4, 4] }) }
       let(:data) do
         [
           [nil, nil, nil, nil, nil, nil, nil, nil],

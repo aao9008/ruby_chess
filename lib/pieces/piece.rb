@@ -70,6 +70,15 @@ class Piece
     current_moves(board)
   end
 
+  # Remove moves that leave king in check
+  def remove_illegal_moves(board, moves)
+    return moves unless moves.size.positive?
+
+    temp_board = Marshal.load(Marshal.dump(board))
+    validator = MoveValidator.new(location, temp_board, moves)
+    validator.verify_possible_moves
+  end
+
   private
 
   # Returns list of transformations from sublcass
