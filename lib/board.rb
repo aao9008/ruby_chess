@@ -15,4 +15,105 @@ class Board
     @black_king = params[:black_king]
     @white_king = params[:white_king]
   end
+
+  def initial_placement
+    initial_row(:black, 0)
+    initial_pawn(:black, 1)
+    initial_pawn(:white, 6)
+    initial_row(:white, 7)
+    @white_king = data[7][4]
+    @black_king = data[0][4]
+    update_all_moves_captures
+  end
+
+  def update_active_piece(pos)
+    @active_piece = data[pos.first][pos.last]
+  end
+
+  def active_piece_moveable?
+    @active_piece.moves.size >= 1 || @active_piece.captures.size >= 1
+  end
+
+  def valid_piece_movement?(pos)
+    @active_piece.moves.include?(pos) ||
+      @active_piece.captures.include?(pos)
+  end
+
+  def valid_piece?(pos, color)
+    piece = @data[pos.first][pos.last]
+    piece&.color == color
+  end
+
+  # This function determines the type of move being made
+  # In order to idnetify which movement logic will be used to update the board
+  def movement_type(position)
+    if en_passant_capture?(position)
+      'EnPassant'
+    elsif pawn_promotion?(position)
+      'PawnPromotion'
+    elsif castling?(position)
+      'Castling'
+    else
+      'Basic'
+    end
+  end
+
+  def king_in_check?(color)
+    # WIP
+  end
+
+  private
+
+  def initial_row(color, rank)
+    @data[rank] = [
+      Rook.new(self, { color: color, location: [rank, 0] }),
+      Knight.new(self, { color: color, location: [rank, 1] }),
+      Bishop.new(self, { color: color, location: [rank, 2] }),
+      Queen.new(self, { color: color, location: [rank, 3] }),
+      King.new(self, { color: color, location: [rank, 4] }),
+      Bishop.new(self, { color: color, location: [rank, 5] }),
+      Knight.new(self, { color: color, location: [rank, 6] }),
+      Rook.new(self, { color: color, location: [rank, 7] })
+    ]
+  end
+
+  def initial_pawn(color, rank)
+    @data[rank].map!.with_index do |_piece, file|
+      Pawn.new(self, { color: color, location: [rank, file] })
+    end
+  end
+
+  def en_passant_capture?(position)
+    @previous_piece&.location == position && en_passant_pawn?
+  end
+
+  # Check that all conditions for en_passant are met
+  def en_passant_pawn?
+    two_pawns? && @active_piece.en_passant_rank? && @previous_piece.en_passant
+  end
+
+  def two_pawns?
+    @previous_piece.symbol == " \u265F " && @active_piece.symbol == " \u265F "
+  end
+
+  def pawn_promotion?(position)
+    @active_piece.symbol == " \u265F " && pawn_promotion_rank?(position)
+  end
+
+  def pawn_promotion_rank?(position)
+    promotion_rank = @active_piece.color == :white ? 0 : 7
+    position.first == promotion_rank
+  end
+
+  def castling?(position)
+    file_difference = (@active_piece.location.last - position.last).abs
+
+    @active_piece.symbol == " \u265A " && file_difference == 2
+  end
+
+  # Generate all possible moves and captures for all pieces on game board
+  def update_all_moves_captures
+    pieces = @data.flatten(1).compact
+    pieces.each { |piece| piece.update(self) }
+  end
 end
