@@ -58,10 +58,26 @@ RSpec.describe CastlingMovement do
 
   describe '#remove_original_rook_piece' do
     it 'updates the previous location of the castling rook to nil' do
-      movement.remove_original_piece
+      movement.remove_original_rook_piece
       old_rook_location = movement.board.data[7][7]
       expect(old_rook_location).to be nil
     end
   end
 
+  describe '#update_castling_rook_location' do
+    it 'updates location of the new rook piece' do
+      expect(wrk2).to receive(:update_location).with([7, 5])
+      movement.update_castling_rook_location(wrk2)
+    end
+  end
+
+  describe '#update_new_position' do
+    new_location = [7, 6]
+    include_examples 'piece placement behavior', new_location
+  end
+
+  describe '#remove_original_piece' do
+    old_location = [7, 4]
+    include_examples 'piece removal behavior', old_location
+  end
 end
