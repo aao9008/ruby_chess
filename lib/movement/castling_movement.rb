@@ -8,9 +8,16 @@ class CastlingMovement < BasicMovement
   end
 
   def update_castling_moves
+    # Move the king piece
     update_new_position
     remove_original_piece
     update_active_piece_location
+
+    # Move the castling rook
+    castling_rook = find_castling_rook
+    update_rook_position(castling_rook)
+    remove_original_rook_piece
+    update_castling_rook_location
   end
 
   def find_castling_rook
@@ -25,6 +32,11 @@ class CastlingMovement < BasicMovement
 
   def remove_original_rook_piece
     @board.data[pos.first][old_rook_column] = nil
+  end
+
+  def update_castling_rook_location(rook)
+    new_location = [pos.first, new_rook_column]
+    rook.update_location(new_location)
   end
 
   private
