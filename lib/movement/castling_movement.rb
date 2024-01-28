@@ -23,6 +23,10 @@ class CastlingMovement < BasicMovement
     @board.data[pos.first][new_rook_column] = rook
   end
 
+  def remove_original_rook_piece
+    @board.data[pos.first][old_rook_column] = nil
+  end
+
   private
 
   # Determines the rooks orginal location based on the column of the king's move
