@@ -2,7 +2,6 @@
 
 # removes any moves or captures that would put king in check
 class MoveValidator
-
   def initialize(location, board, moves, piece = board.data[location.first][location.last])
     @current_location = location
     @board = board
@@ -49,7 +48,7 @@ class MoveValidator
 
   def move_current_piece(move)
     @board.data[move[0]][move[1]] = @current_piece
-    @current_piece.update_location(move[0], move[1])
+    @current_piece.update_location(move)
   end
 
   def safe_king?(king_location)
