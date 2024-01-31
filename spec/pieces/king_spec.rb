@@ -103,7 +103,7 @@ RSpec.describe King do
       end
 
       it 'has five moves' do
-        wkg.update_location(7, 4)
+        wkg.update_location([7, 4])
         allow(board).to receive(:data).and_return(data)
         result = wkg.find_possible_moves(board)
         expect(result).to contain_exactly([7, 3], [7, 5], [6, 3], [6, 4], [6, 5])

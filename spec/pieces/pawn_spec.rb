@@ -387,7 +387,7 @@ RSpec.describe Pawn do
       end
 
       it 'is not en passant' do
-        bpn.update_location(2, 1)
+        bpn.update_location([2, 1])
         expect(bpn.en_passant).to be false
       end
     end
@@ -408,7 +408,7 @@ RSpec.describe Pawn do
       end
 
       it 'is en passant' do
-        bpn.update_location(3, 1)
+        bpn.update_location([3, 1])
         expect(bpn.en_passant).to be true
       end
     end
