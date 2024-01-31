@@ -7,6 +7,10 @@ class CastlingMovement < BasicMovement
     super
   end
 
+  def update_moves
+    update_castling_moves
+  end
+
   def update_castling_moves
     # Move the king piece
     update_new_position
