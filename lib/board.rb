@@ -58,8 +58,32 @@ class Board
     end
   end
 
+  # This method handles logic for setting up class variables for next player turn/round
+  def reset_board_values
+    @previous_piece = @active_piece
+    @active_piece = nil
+
+    # Notifies all chess pieces of a the boards change and exectues the pieces #update method.
+    changed
+    notify_observers(self)
+  end
+
+  # Logic for checking if a player's king is in check
   def king_in_check?(color)
-    # WIP
+    # Get king game piece of current color
+    king = color == :white ? @white_king : @black_king
+
+    # Create 1-D list of all game pieces on the board
+    pieces = @data.flatten(1).compact
+
+    # Iterate over the pieces list
+    pieces.any? do |piece|
+      # Move on to next piece if it is a friendly piece
+      next unless piece.color != king.color
+
+      # Return true if player's king location is in a given enemey piece's capture list
+      piece.captures.include?(king.location)
+    end
   end
 
   private

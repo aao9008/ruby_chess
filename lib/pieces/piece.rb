@@ -19,8 +19,8 @@ class Piece
   end
 
   # Update the current location of the game piece.
-  def update_location(rank, file)
-    @location = [rank, file]
+  def update_location(pos)
+    @location = pos
     @moved = true
   end
 

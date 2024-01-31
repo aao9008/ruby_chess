@@ -12,9 +12,9 @@ class Pawn < Piece
     @en_passant = false
   end
 
-  def update_location(rank, file)
-    update_en_passant(rank)
-    super(rank, file)
+  def update_location(position)
+    update_en_passant(position.first)
+    super(position)
   end
 
   # determines the mathematical direction - white moves up & black moves down

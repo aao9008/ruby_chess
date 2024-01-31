@@ -295,4 +295,52 @@ RSpec.describe Board do
       board.reset_board_values
     end
   end
+
+  describe '#king_in_check?' do
+    context 'when king is in check' do
+      subject(:board) { described_class.new(data, { white_king: data[7][4] }) }
+      let(:bqn) { instance_double(Queen, color: :black, location: [0, 4], captures: [[7, 4]]) }
+      let(:wkg) { instance_double(King, color: :white, location: [7, 4]) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [bqn, nil, nil, nil, wkg, nil, nil, nil]
+        ]
+      end
+
+      it 'returns true' do
+        result = board.king_in_check?(:white)
+        expect(result).to be true
+      end
+    end
+
+    context 'when king is not in check' do
+      subject(:board) { described_class.new(data, { white_king: data[7][4] }) }
+      let(:brk) { instance_double(Rook, color: :black, location: [0, 0], captures: [[1, 0], [0, 1]]) }
+      let(:wkg) { instance_double(King, color: :white, location: [7, 4]) }
+      let(:data) do
+        [
+          [brk, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, wkg, nil, nil, nil]
+        ]
+      end
+
+      it 'returns false' do
+        result = board.king_in_check?(:white)
+        expect(result).to be false
+      end
+    end
+  end
 end
