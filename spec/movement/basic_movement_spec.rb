@@ -7,7 +7,7 @@ require_relative 'shared_examples'
 RSpec.describe BasicMovement do
   describe '#update_pieces' do
     subject(:movement) { described_class.new }
-    include_examples 'movement behavior'
+    include_examples 'movement behavior', :update_basic_moves
   end
 
   subject(:movement) { described_class.new(board, [5, 5]) }

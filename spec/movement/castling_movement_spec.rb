@@ -14,7 +14,7 @@ RSpec.describe CastlingMovement do
       allow(movement).to receive(:update_castling_moves)
     end
 
-    include_examples 'movement behavior'
+    include_examples 'movement behavior', :update_castling_moves
   end
 
   subject(:movement) { described_class.new(board, [7, 6]) }

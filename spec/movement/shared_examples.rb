@@ -1,4 +1,4 @@
-RSpec.shared_examples 'movement behavior' do
+RSpec.shared_examples 'movement behavior' do |update_method|
   let(:board) { instance_double(Board) }
   let(:pic) { instance_double(Piece, location: [0, 0]) }
   let(:data) do
@@ -30,9 +30,15 @@ RSpec.shared_examples 'movement behavior' do
   it 'updates the position' do
     expect(movement.pos).to eq([0, 1])
   end
-
+  
   it 'calls #update_moves' do
     expect(movement).to receive(:update_moves)
+    pos = [0, 1]
+    movement.update_pieces(board, pos)
+  end
+
+  it "calls ##{update_method}" do
+    expect(movement).to receive(update_method)
     pos = [0, 1]
     movement.update_pieces(board, pos)
   end
@@ -63,7 +69,7 @@ end
 
 RSpec.shared_examples 'update location behavior' do |new_location|
   it 'sends #update_location to active piece' do
-    expect(wpn).to receive(:update_location).with(new_location)
+    expect(board.active_piece).to receive(:update_location).with(new_location)
     movement.update_active_piece_location
   end
 end
