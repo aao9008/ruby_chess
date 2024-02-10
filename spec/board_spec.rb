@@ -8,11 +8,11 @@ require_relative '../lib/pieces/bishop'
 require_relative '../lib/pieces/knight'
 require_relative '../lib/pieces/pawn'
 require_relative '../lib/pieces/piece'
-#require_relative '../lib/movement/movement_factory'
-#require_relative '../lib/movement/basic_movement'
-#require_relative '../lib/movement/en_passant_movement'
-#require_relative '../lib/movement/pawn_promotion_movement'
-#require_relative '../lib/movement/castling_movement'
+require_relative '../lib/movement/movement_factory'
+require_relative '../lib/movement/basic_movement'
+require_relative '../lib/movement/en_passant_movement'
+require_relative '../lib/movement/pawn_promotion_movement'
+require_relative '../lib/movement/castling_movement'
 
 RSpec.describe Board do
   subject(:board) { described_class.new }
@@ -232,6 +232,33 @@ RSpec.describe Board do
     end
   end
 
+  describe '#update' do
+    subject(:board) { described_class.new }
+    let(:basic_movement) { instance_double(BasicMovement) }
+    let(:factory) { double(MovementFactory) }
+
+    before do
+      allow(board).to receive(:movement_type).and_return('Basic')
+      allow(MovementFactory).to receive(:new).with('Basic').and_return(factory)
+      allow(factory).to receive(:build).and_return(basic_movement)
+      allow(basic_movement).to receive(:update_pieces)
+      allow(board).to receive(:reset_board_values)
+    end
+
+    it 'sends #build to factory' do
+      coordinates = [0, 0]
+      expect(MovementFactory).to receive(:new).with('Basic')
+      expect(factory).to receive(:build)
+      board.update(coordinates)
+    end
+
+    it 'sends #update_pieces to movement' do
+      coordinates = [0, 0]
+      expect(basic_movement).to receive(:update_pieces).with(board, coordinates)
+      board.update(coordinates)
+    end
+  end
+
   describe '#movement_type' do
     before do
       @pos = [0, 0]
@@ -340,6 +367,119 @@ RSpec.describe Board do
       it 'returns false' do
         result = board.king_in_check?(:white)
         expect(result).to be false
+      end
+    end
+  end
+
+  describe '#game_over?' do
+    context 'when the game starts and there is no previous piece' do
+      subject(:board) { described_class.new(data) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil]
+        ]
+      end
+
+      it 'is not game over' do
+        expect(board.game_over?).to be false
+      end
+    end
+
+    context 'when king is not in check' do
+      subject(:board) { described_class.new(data, { previous_piece: data[0][7], white_king: data[7][4] }) }
+      let(:black_queen) { instance_double(Queen, color: :black, location: [0, 7], captures: []) }
+      let(:white_king) { instance_double(King, color: :white, location: [7, 4], moves: [[7, 3], [7, 5]], captures: []) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, nil, nil, nil, black_queen],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, white_king, nil, nil, nil]
+        ]
+      end
+
+      it 'is not game over' do
+        expect(board.game_over?).to be false
+      end
+    end
+
+    context 'when king is in check & has legal moves' do
+      subject(:board) { described_class.new(data, { previous_piece: data[0][4], white_king: data[7][4] }) }
+      let(:black_queen) { instance_double(Queen, color: :black, location: [0, 4], captures: [[7, 4]]) }
+      let(:white_king) { instance_double(King, color: :white, location: [7, 4], moves: [[7, 3], [7, 5]], captures: []) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, black_queen, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, white_king, nil, nil, nil]
+        ]
+      end
+
+      it 'is not game over' do
+        expect(board.game_over?).to be false
+      end
+    end
+
+    context 'when king is in check & does not have any legal moves' do
+      subject(:board) { described_class.new(data, { previous_piece: data[7][0], white_king: data[7][4] }) }
+      let(:bqn) { instance_double(Queen, color: :black, location: [7, 0], captures: [[7, 4]]) }
+      let(:brk) { instance_double(Rook, color: :black, location: [6, 7], captures: []) }
+      let(:wkg) { instance_double(King, color: :white, location: [7, 4], moves: [], captures: []) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, brk],
+          [bqn, nil, nil, nil, wkg, nil, nil, nil]
+        ]
+      end
+
+      it 'is game over' do
+        expect(board.game_over?).to be true
+      end
+    end
+
+    context 'when king is in stalemate & does not have any legal moves' do
+      subject(:board) { described_class.new(data, { previous_piece: data[6][0], white_king: data[7][4] }) }
+      let(:bqn) { instance_double(Queen, color: :black, location: [6, 0], moves: [[6, 1]], captures: []) }
+      let(:br1) { instance_double(Rook, color: :black, location: [3, 2], moves: [[3, 1]], captures: []) }
+      let(:br2) { instance_double(Rook, color: :black, location: [3, 4], moves: [[3, 5]], captures: []) }
+      let(:wkg) { instance_double(King, color: :white, location: [7, 4], moves: [], captures: []) }
+      let(:data) do
+        [
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, br1, nil, br2, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, nil, nil, nil, nil],
+          [bqn, nil, nil, nil, nil, nil, nil, nil],
+          [nil, nil, nil, nil, wkg, nil, nil, nil]
+        ]
+      end
+
+      it 'is game over' do
+        expect(board.game_over?).to be true
       end
     end
   end

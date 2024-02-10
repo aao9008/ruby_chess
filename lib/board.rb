@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 require 'observer'
+require_relative 'displayable'
 
 # contains logic for chess board
 class Board
   include Observable
+  include Displayable
   attr_reader :black_king, :white_king, :mode
   attr_accessor :data, :active_piece, :previous_piece
 
@@ -42,6 +44,13 @@ class Board
   def valid_piece?(pos, color)
     piece = @data[pos.first][pos.last]
     piece&.color == color
+  end
+
+  def update(position)
+    type = movement_type(position)
+    movement = MovementFactory.new(type).build
+    movement.update_pieces(self, position)
+    reset_board_values
   end
 
   # This function determines the type of move being made
@@ -84,6 +93,18 @@ class Board
       # Return true if player's king location is in a given enemey piece's capture list
       piece.captures.include?(king.location)
     end
+  end
+
+  def game_over?
+    return false unless @previous_piece
+
+    player_color = @previous_piece.color == :white ? :black : :white
+    no_legal_moves_captures?(player_color)
+  end
+
+  # prints chess board using the displayable module
+  def to_s
+    print_chess_board
   end
 
   private
@@ -139,5 +160,14 @@ class Board
   def update_all_moves_captures
     pieces = @data.flatten(1).compact
     pieces.each { |piece| piece.update(self) }
+  end
+
+  def no_legal_moves_captures?(color)
+    pieces = @data.flatten(1).compact
+    pieces.none? do |piece|
+      next unless piece.color == color
+
+      piece.moves.size.positive? || piece.captures.size.positive?
+    end
   end
 end
