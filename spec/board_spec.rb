@@ -187,7 +187,7 @@ RSpec.describe Board do
       end
     end
 
-    context 'whe a position does not match a valid move or capture' do
+    context 'when a position does not match a valid move or capture' do
       let(:piece) { double(Piece, location: [0, 0]) }
       let(:data) { [[piece, nil], [nil, nil]] }
       subject(:board) { described_class.new(data, { active_piece: data[0][0] }) }
