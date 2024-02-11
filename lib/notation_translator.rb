@@ -7,18 +7,18 @@ class NotationTranslator
   end
 
   def translate_position(pos)
-    translate_rank(pos[0])
-    translate_file(pos[-1])
-    [@row, @column]
+    translate_file(pos[0])
+    translate_rank(pos[-1])
+    p [@row, @column]
   end
 
   private
 
   def translate_rank(rank)
-    @row = rank.ord - 97
+    @row = 8 - rank.to_i
   end
 
   def translate_file(file)
-    @column = 8 - file.to_i
+    @column = file.downcase.ord - 97
   end
 end
