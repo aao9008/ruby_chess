@@ -56,7 +56,7 @@ module Displayable
     elsif (row_index + column_index).even?
       100
     else
-      43
+      47
     end
   end
 
