@@ -9,7 +9,7 @@ class NotationTranslator
   def translate_position(pos)
     translate_file(pos[0])
     translate_rank(pos[-1])
-    p [@row, @column]
+    [@row, @column]
   end
 
   private

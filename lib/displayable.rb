@@ -75,7 +75,7 @@ module Displayable
       text_color = square.color == :white ? 97 : 30
       color_square(text_color, background, square.symbol)
     elsif @active_piece&.moves&.any?([row_index, column_index])
-      color_square(41, background, " \u25CF ")
+      color_square(91, background, " \u25CF ")
     else
       color_square(90, background, '   ')
     end

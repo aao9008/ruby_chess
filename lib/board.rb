@@ -95,6 +95,15 @@ class Board
     end
   end
 
+  def possible_en_passant?
+    @active_piece&.captures&.include?(@previous_piece&.location) &&
+      en_passant_pawn?
+  end
+
+  def possible_castling?
+    @active_piece.symbol == " \u265A " && castling_moves?
+  end
+
   def game_over?
     return false unless @previous_piece
 
@@ -139,6 +148,16 @@ class Board
 
   def two_pawns?
     @previous_piece.symbol == " \u265F " && @active_piece.symbol == " \u265F "
+  end
+
+  def castling_moves?
+    location = @active_piece.location
+    rank = location[0]
+    file = location[1]
+    king_side = [rank, file + 2]
+    queen_side = [rank, file - 2]
+    @active_piece&.moves&.include?(king_side) ||
+      @active_piece&.moves&.include?(queen_side)
   end
 
   def pawn_promotion?(position)
